@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let searchQuery = "";
   let currentDay = "";
   let currentTimeRange = "";
+  let sharedActivity = new URLSearchParams(window.location.search).get("activity");
 
   // Authentication state
   let currentUser = null;
@@ -408,6 +409,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Apply search and filter, and handle weekend filter in client
       displayFilteredActivities();
+      if (sharedActivity) {
+        const sharedCard = Array.from(activitiesList.children).find(
+          (card) => card.dataset.activityName === sharedActivity
+        );
+        if (sharedCard) {
+          sharedCard.classList.add("shared-activity");
+          sharedCard.scrollIntoView({ block: "center" });
+        } else {
+          showMessage("The shared activity could not be found.", "error");
+        }
+        sharedActivity = null;
+      }
     } catch (error) {
       activitiesList.innerHTML =
         "<p>Failed to load activities. Please try again later.</p>";
@@ -491,6 +504,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
     activityCard.className = "activity-card";
+    activityCard.dataset.activityName = name;
 
     // Calculate spots and capacity
     const totalSpots = details.max_participants;
@@ -585,11 +599,65 @@ document.addEventListener("DOMContentLoaded", () => {
         `
         }
       </div>
+      <div class="share-actions" aria-label="Share activity">
+        <span>Share:</span>
+      </div>
     `;
 
     if (details.difficulty) {
       activityCard.querySelector(".activity-difficulty span").textContent = details.difficulty;
     }
+
+    const shareActions = activityCard.querySelector(".share-actions");
+    const activityUrl = new URL(window.location.pathname, window.location.origin);
+    activityUrl.searchParams.set("activity", name);
+    const shareText = `Check out ${name} at Mergington High School!`;
+    const shareLinks = [
+      {
+        label: "WhatsApp",
+        url: `https://wa.me/?${new URLSearchParams({ text: `${shareText} ${activityUrl}` })}`,
+      },
+      {
+        label: "Facebook",
+        url: `https://www.facebook.com/sharer/sharer.php?${new URLSearchParams({ u: activityUrl.toString() })}`,
+      },
+      {
+        label: "Email",
+        url: `mailto:?subject=${encodeURIComponent(name)}&body=${encodeURIComponent(`${shareText}\n${activityUrl}`)}`,
+      },
+    ];
+    shareLinks.forEach(({ label, url }) => {
+      const link = document.createElement("a");
+      link.textContent = label;
+      link.href = url;
+      link.setAttribute("aria-label", `Share ${name} via ${label}`);
+      if (label !== "Email") {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+      shareActions.appendChild(link);
+    });
+
+    const copyButton = document.createElement("button");
+    copyButton.type = "button";
+    copyButton.textContent = "Copy link";
+    copyButton.setAttribute("aria-label", `Copy link to ${name}`);
+    const copyStatus = document.createElement("span");
+    copyStatus.className = "share-status";
+    copyStatus.setAttribute("role", "status");
+    copyButton.addEventListener("click", async () => {
+      try {
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+          throw new Error("Clipboard unavailable");
+        }
+        await navigator.clipboard.writeText(activityUrl.toString());
+        copyStatus.textContent = "Link copied.";
+      } catch (error) {
+        console.error("Could not copy activity link:", error);
+        copyStatus.textContent = "Could not copy link. Try sharing by email.";
+      }
+    });
+    shareActions.append(copyButton, copyStatus);
 
     // Add click handlers for delete buttons
     const deleteButtons = activityCard.querySelectorAll(".delete-participant");
