@@ -1,10 +1,13 @@
 /* Color palette */
 :root {
+  color-scheme: light;
+
   /* Primary colors */
   --primary: #1a237e;
   --primary-light: #534bae;
   --primary-dark: #000051;
   --primary-text: #ffffff;
+  --heading: var(--primary);
 
   /* Secondary colors */
   --secondary: #ff6f00;
@@ -30,6 +33,38 @@
   --error-light: #ffebee;
   --info: #0c5460;
   --info-light: #d1ecf1;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --primary: #3949ab;
+  --primary-light: #5c6bc0;
+  --primary-dark: #283593;
+  --primary-text: #ffffff;
+  --heading: #c5cae9;
+
+  --secondary: #ff9800;
+  --secondary-light: #ffb74d;
+  --secondary-dark: #e65100;
+  --secondary-text: #1b1b1b;
+
+  --background: #121212;
+  --surface: #1e1e1e;
+  --text-primary: #f5f5f5;
+  --text-secondary: #bdbdbd;
+  --border: #424242;
+  --border-light: #333333;
+  --border-focus: #616161;
+
+  --success: #81c784;
+  --success-light: #1b3a20;
+  --warning: #ffb74d;
+  --warning-light: #3e2e16;
+  --error: #ef9a9a;
+  --error-light: #3b1c1c;
+  --info: #80deea;
+  --info-light: #17373a;
 }
 
 * {
@@ -91,7 +126,7 @@ section h3 {
   margin-bottom: 15px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
-  color: var(--primary);
+  color: var(--heading);
   font-size: 1.1rem;
 }
 
@@ -113,7 +148,7 @@ section h3 {
   margin-bottom: 15px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
-  color: var(--primary);
+  color: var(--heading);
   font-size: 1.1rem;
 }
 
@@ -171,7 +206,7 @@ section h3 {
 
 .activity-card h4 {
   margin-bottom: 8px;
-  color: var(--primary);
+  color: var(--heading);
   font-size: 1rem;
   letter-spacing: 0.3px;
   padding-bottom: 6px;
@@ -286,7 +321,7 @@ section h3 {
 }
 
 .participants-list h5 {
-  color: var(--primary);
+  color: var(--heading);
   margin-bottom: 5px;
   font-size: 0.8em;
 }
@@ -336,6 +371,12 @@ button {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
+}
+
+input {
+  color: var(--text-primary);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
 }
 
 /* Tooltip styles */
@@ -485,7 +526,7 @@ button {
 
 /* Login modal specific styling */
 #login-modal .modal-content h3 {
-  color: var(--primary);
+  color: var(--heading);
   font-size: 1.2rem;
   margin-bottom: 15px;
   text-align: center;
@@ -527,11 +568,17 @@ footer {
   flex: 1;
   min-width: 0; /* Add this to prevent input from overflowing */
   padding: 6px 10px;
+  color: var(--text-primary);
+  background-color: var(--surface);
   border: 1px solid var(--border);
   border-right: none;
   border-radius: 20px 0 0 20px;
   font-size: 0.85rem;
   transition: all 0.3s ease;
+}
+
+.search-box input::placeholder {
+  color: var(--text-secondary);
 }
 
 .search-box input:focus {
@@ -657,10 +704,19 @@ footer {
 }
 
 /* User controls in header */
+@media (max-width: 600px) {
+  header {
+    padding-top: 48px;
+  }
+}
+
 #user-controls {
   position: absolute;
   top: 10px;
   right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 #user-status {
@@ -692,6 +748,14 @@ footer {
 
 .icon-button:hover {
   background-color: rgba(255, 255, 255, 0.3);
+}
+
+.theme-toggle {
+  justify-content: center;
+  width: 34px;
+  height: 32px;
+  padding: 4px;
+  font-size: 1rem;
 }
 
 .user-icon {
